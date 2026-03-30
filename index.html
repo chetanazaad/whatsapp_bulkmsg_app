@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | WA Bulk SaaS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <div class="auth-wrapper">
+      <div class="card auth-card">
+        <div class="auth-brand">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <i class="fa-brands fa-whatsapp fs-4"></i>
+            <span class="fw-bold">WA Bulk Pro</span>
+          </div>
+          <div class="small opacity-75">Scale campaigns with smart WhatsApp automation.</div>
+        </div>
+        <div class="card-body p-4 p-md-5">
+          <h4 class="fw-semibold mb-1">Welcome back</h4>
+          <p class="text-muted mb-4">Sign in to manage campaigns and templates.</p>
+          <form class="needs-validation" novalidate data-success-message="Login successful. Redirecting...">
+            <div class="mb-3">
+              <label class="form-label">Work Email</label>
+              <input type="email" class="form-control form-control-lg" placeholder="you@company.com" required />
+              <div class="invalid-feedback">Please enter a valid email.</div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Password</label>
+              <input type="password" class="form-control form-control-lg" placeholder="********" minlength="6" required />
+              <div class="invalid-feedback">Password must be at least 6 characters.</div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="rememberMe" />
+                <label class="form-check-label text-muted small" for="rememberMe">Remember me</label>
+              </div>
+              <a href="#" class="small">Forgot password?</a>
+            </div>
+            <button class="btn btn-primary btn-lg w-100 mb-3" type="submit">
+              <span class="me-2"><i class="fa-solid fa-arrow-right-to-bracket"></i></span>
+              Login to Dashboard
+            </button>
+            <a href="dashboard.html" class="btn btn-outline-secondary w-100">Skip to Demo Dashboard</a>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastHost"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/app.js"></script>
+  </body>
+</html>

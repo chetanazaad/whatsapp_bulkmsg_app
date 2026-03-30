@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reports | WA Bulk Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <div class="d-flex app-shell">
+      <aside class="sidebar p-3" id="sidebar">
+        <div class="d-flex align-items-center gap-2 mb-4 px-2">
+          <i class="fa-brands fa-whatsapp text-success fs-4"></i>
+          <span class="sidebar-brand">WA Bulk Pro</span>
+        </div>
+        <nav class="nav flex-column">
+          <a class="nav-link" href="dashboard.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a>
+          <a class="nav-link" href="contacts.html"><i class="fa-solid fa-address-book"></i>Contacts</a>
+          <a class="nav-link" href="campaigns.html"><i class="fa-solid fa-bullhorn"></i>Campaign Builder</a>
+          <a class="nav-link" href="templates.html"><i class="fa-solid fa-layer-group"></i>Templates</a>
+          <a class="nav-link active" href="reports.html"><i class="fa-solid fa-chart-pie"></i>Reports</a>
+          <a class="nav-link" href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a>
+        </nav>
+      </aside>
+      <div class="mobile-overlay" id="mobileOverlay"></div>
+      <main class="content-wrap">
+        <div class="topbar d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-outline-secondary d-lg-none" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+            <div>
+              <h5 class="mb-0 fw-semibold">Logs & Reports</h5>
+              <small class="text-muted">Track message delivery and campaign reliability</small>
+            </div>
+          </div>
+          <button class="btn btn-primary" data-toast="Report exported as CSV." data-type="success"><i class="fa-solid fa-file-arrow-down me-2"></i>Export Report</button>
+        </div>
+        <section class="page-body">
+          <div class="card card-soft mb-3">
+            <div class="card-body">
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input class="form-control" placeholder="Search campaign or number" />
+                  </div>
+                </div>
+                <div class="col-md-3"><select class="form-select"><option>All Status</option><option>Delivered</option><option>Failed</option><option>Read</option></select></div>
+                <div class="col-md-3"><input class="form-control" type="date" /></div>
+                <div class="col-md-2"><button class="btn btn-outline-secondary w-100" data-toast="Filters applied.">Apply</button></div>
+              </div>
+            </div>
+          </div>
+          <div class="card card-soft">
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table align-middle">
+                  <thead>
+                    <tr>
+                      <th>Timestamp</th>
+                      <th>Campaign</th>
+                      <th>Recipient</th>
+                      <th>Status</th>
+                      <th>Latency</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>30 Mar, 10:12</td>
+                      <td>Festive Offer Push</td>
+                      <td>+91 98765 12345</td>
+                      <td><span class="badge badge-soft-success">Delivered</span></td>
+                      <td>1.2s</td>
+                    </tr>
+                    <tr>
+                      <td>30 Mar, 10:15</td>
+                      <td>Festive Offer Push</td>
+                      <td>+91 99887 66554</td>
+                      <td><span class="badge badge-soft-warning">Read</span></td>
+                      <td>1.0s</td>
+                    </tr>
+                    <tr>
+                      <td>30 Mar, 10:17</td>
+                      <td>Lead Nurture Flow</td>
+                      <td>+91 91234 56780</td>
+                      <td><span class="badge badge-soft-danger">Failed</span></td>
+                      <td>3.8s</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastHost"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/app.js"></script>
+  </body>
+</html>

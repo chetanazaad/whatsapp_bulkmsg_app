@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campaign Builder | WA Bulk Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <div class="d-flex app-shell">
+      <aside class="sidebar p-3" id="sidebar">
+        <div class="d-flex align-items-center gap-2 mb-4 px-2">
+          <i class="fa-brands fa-whatsapp text-success fs-4"></i>
+          <span class="sidebar-brand">WA Bulk Pro</span>
+        </div>
+        <nav class="nav flex-column">
+          <a class="nav-link" href="dashboard.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a>
+          <a class="nav-link" href="contacts.html"><i class="fa-solid fa-address-book"></i>Contacts</a>
+          <a class="nav-link active" href="campaigns.html"><i class="fa-solid fa-bullhorn"></i>Campaign Builder</a>
+          <a class="nav-link" href="templates.html"><i class="fa-solid fa-layer-group"></i>Templates</a>
+          <a class="nav-link" href="reports.html"><i class="fa-solid fa-chart-pie"></i>Reports</a>
+          <a class="nav-link" href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a>
+        </nav>
+      </aside>
+      <div class="mobile-overlay" id="mobileOverlay"></div>
+      <main class="content-wrap">
+        <div class="topbar d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-outline-secondary d-lg-none" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+            <div>
+              <h5 class="mb-0 fw-semibold">Campaign Builder</h5>
+              <small class="text-muted">Create personalized WhatsApp broadcast flows</small>
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary" data-toast="Draft saved." data-type="success"><i class="fa-regular fa-floppy-disk me-2"></i>Save Draft</button>
+            <button class="btn btn-primary" data-toast="Campaign queued for dispatch." data-type="primary"><i class="fa-solid fa-paper-plane me-2"></i>Send Now</button>
+          </div>
+        </div>
+
+        <section class="page-body">
+          <form class="needs-validation" novalidate data-success-message="Campaign scheduled successfully.">
+            <div class="row g-3">
+              <div class="col-xl-8">
+                <div class="card card-soft mb-3">
+                  <div class="card-body">
+                    <div class="section-title">1) Basic Details</div>
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label">Campaign Name</label>
+                        <input class="form-control" placeholder="Ramadan Promo Push" required />
+                        <div class="invalid-feedback">Campaign name is required.</div>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Template</label>
+                        <select class="form-select" id="templateSelect" required>
+                          <option value="">Choose template</option>
+                          <option value="welcome">Welcome Sequence</option>
+                          <option value="offer">Special Offer</option>
+                          <option value="reminder">Appointment Reminder</option>
+                        </select>
+                        <div class="invalid-feedback">Select a template.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card card-soft mb-3">
+                  <div class="card-body">
+                    <div class="section-title">2) Dynamic Variables</div>
+                    <div class="row g-3">
+                      <div class="col-md-6"><label class="form-label">Name</label><input data-var-key="name" class="form-control" placeholder="Aman" /></div>
+                      <div class="col-md-6"><label class="form-label">Company</label><input data-var-key="company" class="form-control" placeholder="Acme Retail" /></div>
+                      <div class="col-md-6"><label class="form-label">Date</label><input data-var-key="date" class="form-control" placeholder="10 April" /></div>
+                      <div class="col-md-6"><label class="form-label">Time</label><input data-var-key="time" class="form-control" placeholder="4:30 PM" /></div>
+                      <div class="col-md-6"><label class="form-label">Discount</label><input data-var-key="discount" class="form-control" placeholder="25%" /></div>
+                      <div class="col-md-6"><label class="form-label">Promo Code</label><input data-var-key="code" class="form-control" placeholder="SAVE25" /></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card card-soft">
+                  <div class="card-body">
+                    <div class="section-title">3) Audience Selection</div>
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label">Select Contact Group</label>
+                        <select class="form-select" required>
+                          <option value="">Choose audience group</option>
+                          <option>All Leads (5,240)</option>
+                          <option>Active Customers (8,900)</option>
+                          <option>VIP Users (620)</option>
+                        </select>
+                        <div class="invalid-feedback">Choose at least one audience.</div>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Or Upload CSV</label>
+                        <input id="csvFile" class="form-control" type="file" accept=".csv" />
+                        <small class="text-muted d-block mt-1">Selected: <span id="csvFileName">None</span></small>
+                      </div>
+                    </div>
+                    <ul class="list-group mt-3 small" id="csvPreviewList">
+                      <li class="list-group-item text-muted">CSV rows will appear here.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-4">
+                <div class="card card-soft mb-3">
+                  <div class="card-body">
+                    <div class="section-title">Live Message Preview</div>
+                    <div class="preview-box" id="messagePreview">Select a template to preview message.</div>
+                    <div class="d-flex align-items-center mt-3 small text-muted">
+                      <span class="spinner-border spinner-border-sm me-2 text-primary" role="status"></span>
+                      Rendering personalized variants...
+                    </div>
+                  </div>
+                </div>
+                <div class="card card-soft">
+                  <div class="card-body">
+                    <div class="section-title">4) Scheduling</div>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="radio" name="sendMode" id="sendNow" checked />
+                      <label class="form-check-label" for="sendNow">Send immediately</label>
+                    </div>
+                    <div class="form-check mb-3">
+                      <input class="form-check-input" type="radio" name="sendMode" id="scheduleLater" />
+                      <label class="form-check-label" for="scheduleLater">Schedule for later</label>
+                    </div>
+                    <div class="row g-2 mb-3">
+                      <div class="col-6"><input class="form-control" type="date" /></div>
+                      <div class="col-6"><input class="form-control" type="time" /></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Schedule Campaign</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastHost"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/app.js"></script>
+  </body>
+</html>
