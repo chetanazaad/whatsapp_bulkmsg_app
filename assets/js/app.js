@@ -4,9 +4,12 @@ document.addEventListener("DOMContentLoaded", () => {
   initCSVPreview();
   initTemplatePreview();
   initApiKeyToggle();
+  initAuth();
   initValidation();
   bindDemoActions();
 });
+
+const API_BASE_URL = "https://whatsapp-bulkmsg-app-back.onrender.com";
 
 function initSidebar() {
   const sidebar = document.getElementById("sidebar");
@@ -139,6 +142,85 @@ function bindDemoActions() {
       showToast(message, type);
     });
   });
+}
+
+function initAuth() {
+  const loginForm = document.getElementById("loginForm");
+  const registerForm = document.getElementById("registerForm");
+
+  if (registerForm) {
+    registerForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!registerForm.checkValidity()) {
+        e.stopPropagation();
+        registerForm.classList.add("was-validated");
+        return;
+      }
+
+      const payload = {
+        full_name: document.getElementById("registerName")?.value.trim(),
+        email: document.getElementById("registerEmail")?.value.trim(),
+        password: document.getElementById("registerPassword")?.value
+      };
+
+      try {
+        await apiPost("/auth/register", payload);
+        showToast("Registration successful. You can login now.", "success");
+        const modalEl = document.getElementById("registerModal");
+        if (modalEl) {
+          const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+          modal.hide();
+        }
+        registerForm.reset();
+        registerForm.classList.remove("was-validated");
+      } catch (err) {
+        showToast(err.message || "Registration failed.", "danger");
+      }
+    });
+  }
+
+  if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!loginForm.checkValidity()) {
+        e.stopPropagation();
+        loginForm.classList.add("was-validated");
+        return;
+      }
+      const payload = {
+        email: document.getElementById("loginEmail")?.value.trim(),
+        password: document.getElementById("loginPassword")?.value
+      };
+
+      try {
+        const data = await apiPost("/auth/login", payload);
+        if (data.access_token) {
+          localStorage.setItem("wa_token", data.access_token);
+        }
+        showToast("Login successful. Redirecting...", "success");
+        window.setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 700);
+      } catch (err) {
+        showToast(err.message || "Login failed.", "danger");
+      }
+    });
+  }
+}
+
+async function apiPost(path, payload) {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.message || `Request failed: ${response.status}`);
+  }
+  return data;
 }
 
 function showToast(message, type = "primary") {
