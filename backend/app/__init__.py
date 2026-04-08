@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
 from werkzeug.exceptions import HTTPException
+from flask_cors import CORS
 
 from .config import get_config
 from .extensions import db, bcrypt, jwt
@@ -11,6 +12,14 @@ from .routes import auth, user, contacts, campaigns, templates, logs
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config.from_object(get_config())
+
+    # CORS for browser-based frontend (GitHub Pages, etc.)
+    # Configure allowed origin via env var FRONTEND_ORIGIN if needed.
+    CORS(
+        app,
+        resources={r"/*": {"origins": app.config.get("FRONTEND_ORIGIN", "*")}},
+        supports_credentials=False,
+    )
 
     db.init_app(app)
     bcrypt.init_app(app)

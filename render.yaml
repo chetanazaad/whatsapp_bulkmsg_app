@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: whatsapp-bulkmsg-api
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn backend.wsgi:app
+    healthCheckPath: /health
+    envVars:
+      - key: FLASK_ENV
+        value: prod
+      - key: SCHEDULER_ENABLED
+        value: "true"
+      - key: SCHEDULER_JOB_INTERVAL_SECONDS
+        value: "30"
+      # Set this to your GitHub Pages origin if you want strict CORS:
+      # https://chetanazaad.github.io
+      - key: FRONTEND_ORIGIN
+        value: "*"

@@ -23,6 +23,9 @@ class BaseConfig:
     SCHEDULER_ENABLED = os.getenv("SCHEDULER_ENABLED", "true").lower() == "true"
     SCHEDULER_JOB_INTERVAL_SECONDS = int(os.getenv("SCHEDULER_JOB_INTERVAL_SECONDS", "30"))
 
+    # e.g. https://chetanazaad.github.io (or "*" for dev)
+    FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "*")
+
 
 class DevelopmentConfig(BaseConfig):
     DEBUG = True
