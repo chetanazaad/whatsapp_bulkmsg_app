@@ -52,7 +52,8 @@ def create_campaign_route():
         contact_ids=existing_ids,
         scheduled_at=scheduled_at,
     )
-    enqueue_messages_for_campaign(campaign, variables=variables)
+    if not scheduled_at:
+        enqueue_messages_for_campaign(campaign, variables=variables)
 
     return jsonify({"id": campaign.id, "status": campaign.status}), 201
 

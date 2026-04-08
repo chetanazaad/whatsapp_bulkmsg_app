@@ -55,12 +55,12 @@
                 <div class="col-md-4">
                   <div class="input-group">
                     <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input class="form-control" placeholder="Search campaign or number" />
+                    <input id="logsSearchInput" class="form-control" placeholder="Search campaign or number" />
                   </div>
                 </div>
-                <div class="col-md-3"><select class="form-select"><option>All Status</option><option>Delivered</option><option>Failed</option><option>Read</option></select></div>
+                <div class="col-md-3"><select id="logsStatusFilter" class="form-select"><option value="">All Status</option><option value="sent">Sent</option><option value="failed">Failed</option><option value="pending">Pending</option></select></div>
                 <div class="col-md-3"><input class="form-control" type="date" /></div>
-                <div class="col-md-2"><button class="btn btn-outline-secondary w-100" data-toast="Filters applied.">Apply</button></div>
+                <div class="col-md-2"><button id="applyLogsFilter" class="btn btn-outline-secondary w-100" type="button">Apply</button></div>
               </div>
             </div>
           </div>
@@ -77,7 +77,7 @@
                       <th>Latency</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody id="logsTableBody">
                     <tr>
                       <td>30 Mar, 10:12</td>
                       <td>Festive Offer Push</td>

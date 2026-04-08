@@ -1,15 +1,29 @@
 document.addEventListener("DOMContentLoaded", () => {
+  enforceAuthGuard();
   initSidebar();
   initTooltips();
   initCSVPreview();
   initTemplatePreview();
   initApiKeyToggle();
   initAuth();
+  initContactsPage();
+  initTemplatesPage();
+  initLogsPage();
+  initSettingsPage();
   initValidation();
   bindDemoActions();
 });
 
 const API_BASE_URL = "https://whatsapp-bulkmsg-app-back.onrender.com";
+
+function enforceAuthGuard() {
+  const page = window.location.pathname.split("/").pop() || "index.html";
+  const isPublicPage = page === "index.html" || page === "";
+  const token = localStorage.getItem("wa_token");
+  if (!isPublicPage && !token) {
+    window.location.href = "index.html";
+  }
+}
 
 function initSidebar() {
   const sidebar = document.getElementById("sidebar");
@@ -209,10 +223,12 @@ function initAuth() {
 }
 
 async function apiPost(path, payload) {
+  const token = localStorage.getItem("wa_token");
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
     },
     body: JSON.stringify(payload)
   });
@@ -221,6 +237,226 @@ async function apiPost(path, payload) {
     throw new Error(data.message || `Request failed: ${response.status}`);
   }
   return data;
+}
+
+async function apiGet(path) {
+  const token = localStorage.getItem("wa_token");
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    }
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.message || `Request failed: ${response.status}`);
+  }
+  return data;
+}
+
+async function apiPut(path, payload) {
+  const token = localStorage.getItem("wa_token");
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    },
+    body: JSON.stringify(payload)
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.message || `Request failed: ${response.status}`);
+  }
+  return data;
+}
+
+function initContactsPage() {
+  const tableBody = document.getElementById("contactsTableBody");
+  const addContactForm = document.getElementById("addContactForm");
+  if (!tableBody) return;
+
+  const renderContacts = (contacts) => {
+    if (!contacts.length) {
+      tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No contacts found.</td></tr>`;
+      return;
+    }
+    tableBody.innerHTML = contacts
+      .map(
+        (c) => `<tr>
+          <td>${c.name}</td>
+          <td>${c.country_code} ${c.phone_number}</td>
+          <td>General</td>
+          <td>${c.is_opt_in ? '<span class="badge badge-soft-success">Opted-in</span>' : '<span class="badge badge-soft-danger">Opted-out</span>'}</td>
+          <td class="text-end"><button class="btn btn-sm btn-light" data-toast="Edit endpoint can be added next."><i class="fa-solid fa-pen"></i></button></td>
+        </tr>`
+      )
+      .join("");
+  };
+
+  apiGet("/contacts")
+    .then(renderContacts)
+    .catch((err) => showToast(err.message || "Failed to load contacts.", "danger"));
+
+  if (addContactForm) {
+    addContactForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!addContactForm.checkValidity()) {
+        addContactForm.classList.add("was-validated");
+        return;
+      }
+      try {
+        await apiPost("/contacts", {
+          name: document.getElementById("contactName")?.value.trim(),
+          phone_number: document.getElementById("contactPhone")?.value.trim(),
+          country_code: document.getElementById("contactCountryCode")?.value,
+          is_opt_in: true
+        });
+        showToast("Contact created successfully.", "success");
+        const modalEl = document.getElementById("addContactModal");
+        const modal = modalEl ? bootstrap.Modal.getInstance(modalEl) : null;
+        if (modal) modal.hide();
+        addContactForm.reset();
+        addContactForm.classList.remove("was-validated");
+        const fresh = await apiGet("/contacts");
+        renderContacts(fresh);
+      } catch (err) {
+        showToast(err.message || "Failed to create contact.", "danger");
+      }
+    });
+  }
+}
+
+function initTemplatesPage() {
+  const grid = document.getElementById("templateGrid");
+  const form = document.getElementById("newTemplateForm");
+  if (!grid) return;
+
+  const renderTemplates = (items) => {
+    if (!items.length) {
+      grid.innerHTML = `<div class="col-12"><div class="alert alert-light border">No templates yet. Create your first template.</div></div>`;
+      return;
+    }
+    grid.innerHTML = items
+      .map(
+        (t) => `<div class="col-md-6 col-xl-4">
+          <div class="template-card p-3 bg-white">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="mb-0">${t.name}</h6>
+              <span class="badge badge-soft-success">Synced</span>
+            </div>
+            <p class="small text-muted mb-3">${t.category || "General"} • ${t.language_code}</p>
+            <button class="btn btn-sm btn-outline-primary w-100" data-toast="Template selected.">Use Template</button>
+          </div>
+        </div>`
+      )
+      .join("");
+  };
+
+  apiGet("/templates")
+    .then(renderTemplates)
+    .catch((err) => showToast(err.message || "Failed to load templates.", "danger"));
+
+  if (form) {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!form.checkValidity()) {
+        form.classList.add("was-validated");
+        return;
+      }
+      try {
+        await apiPost("/templates", {
+          name: document.getElementById("templateNameInput")?.value.trim(),
+          category: document.getElementById("templateCategoryInput")?.value,
+          body: document.getElementById("templateBodyInput")?.value.trim(),
+          language_code: "en_US"
+        });
+        showToast("Template created.", "success");
+        const modalEl = document.getElementById("newTemplateModal");
+        const modal = modalEl ? bootstrap.Modal.getInstance(modalEl) : null;
+        if (modal) modal.hide();
+        form.reset();
+        form.classList.remove("was-validated");
+        const fresh = await apiGet("/templates");
+        renderTemplates(fresh);
+      } catch (err) {
+        showToast(err.message || "Failed to create template.", "danger");
+      }
+    });
+  }
+}
+
+function initLogsPage() {
+  const tableBody = document.getElementById("logsTableBody");
+  if (!tableBody) return;
+  const statusFilter = document.getElementById("logsStatusFilter");
+  const searchInput = document.getElementById("logsSearchInput");
+  const applyBtn = document.getElementById("applyLogsFilter");
+
+  const loadLogs = async () => {
+    const status = statusFilter?.value || "";
+    const query = status ? `?status=${encodeURIComponent(status)}` : "";
+    const rows = await apiGet(`/logs${query}`);
+    const filtered = rows.filter((r) =>
+      (searchInput?.value || "").trim()
+        ? `${r.to_phone} ${r.whatsapp_message_id || ""}`.toLowerCase().includes(searchInput.value.trim().toLowerCase())
+        : true
+    );
+    if (!filtered.length) {
+      tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No logs found.</td></tr>`;
+      return;
+    }
+    tableBody.innerHTML = filtered
+      .map(
+        (r) => `<tr>
+          <td>${r.sent_at ? new Date(r.sent_at).toLocaleString() : "-"}</td>
+          <td>${r.campaign_id ?? "-"}</td>
+          <td>${r.to_phone}</td>
+          <td><span class="badge ${r.status === "sent" ? "badge-soft-success" : r.status === "failed" ? "badge-soft-danger" : "badge-soft-warning"}">${r.status}</span></td>
+          <td>${r.whatsapp_message_id || r.error_message || "-"}</td>
+        </tr>`
+      )
+      .join("");
+  };
+
+  loadLogs().catch((err) => showToast(err.message || "Failed to load logs.", "danger"));
+  if (applyBtn) {
+    applyBtn.addEventListener("click", () => {
+      loadLogs().catch((err) => showToast(err.message || "Failed to load logs.", "danger"));
+    });
+  }
+}
+
+function initSettingsPage() {
+  const form = document.getElementById("settingsForm");
+  if (!form) return;
+
+  const fullName = document.getElementById("settingsFullName");
+  const email = document.getElementById("settingsEmail");
+  const apiKey = document.getElementById("apiKey");
+
+  apiGet("/user/profile")
+    .then((p) => {
+      if (fullName) fullName.value = p.full_name || "";
+      if (email) email.value = p.email || "";
+    })
+    .catch((err) => showToast(err.message || "Failed to load profile.", "danger"));
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.classList.add("was-validated");
+      return;
+    }
+    try {
+      await apiPut("/user/profile", {
+        full_name: fullName?.value.trim(),
+        whatsapp_api_key: apiKey?.value.trim()
+      });
+      showToast("Profile updated successfully.", "success");
+    } catch (err) {
+      showToast(err.message || "Failed to save profile.", "danger");
+    }
+  });
 }
 
 function showToast(message, type = "primary") {

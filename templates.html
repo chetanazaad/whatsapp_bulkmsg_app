@@ -50,7 +50,7 @@
         </div>
 
         <section class="page-body">
-          <div class="row g-3">
+          <div class="row g-3" id="templateGrid">
             <div class="col-md-6 col-xl-4">
               <div class="template-card p-3 bg-white">
                 <div class="d-flex justify-content-between align-items-center mb-2">
@@ -88,7 +88,7 @@
 
     <div class="modal fade" id="newTemplateModal" tabindex="-1">
       <div class="modal-dialog">
-        <form class="modal-content needs-validation" novalidate data-success-message="Template created and sent for approval.">
+        <form id="newTemplateForm" class="modal-content needs-validation" novalidate data-no-toast="true">
           <div class="modal-header">
             <h5 class="modal-title">Create Template</h5>
             <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
@@ -96,12 +96,12 @@
           <div class="modal-body">
             <div class="mb-3">
               <label class="form-label">Template Name</label>
-              <input class="form-control" required />
+              <input id="templateNameInput" class="form-control" required />
               <div class="invalid-feedback">Template name is required.</div>
             </div>
             <div class="mb-3">
               <label class="form-label">Category</label>
-              <select class="form-select" required>
+              <select id="templateCategoryInput" class="form-select" required>
                 <option value="">Select category</option>
                 <option>Marketing</option>
                 <option>Utility</option>
@@ -111,7 +111,7 @@
             </div>
             <div>
               <label class="form-label">Message Content</label>
-              <textarea class="form-control" rows="4" placeholder="Hi {{name}} ..." required></textarea>
+              <textarea id="templateBodyInput" class="form-control" rows="4" placeholder="Hi {{name}} ..." required></textarea>
               <div class="invalid-feedback">Template content is required.</div>
             </div>
           </div>

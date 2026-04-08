@@ -50,23 +50,23 @@
         <section class="page-body">
           <div class="row g-3">
             <div class="col-lg-7">
-              <form class="card card-soft needs-validation" novalidate data-success-message="Settings saved successfully.">
+              <form id="settingsForm" class="card card-soft needs-validation" novalidate data-no-toast="true">
                 <div class="card-body">
                   <div class="section-title">Profile</div>
                   <div class="row g-3">
                     <div class="col-md-6">
                       <label class="form-label">Full Name</label>
-                      <input class="form-control" value="Rohan Mehta" required />
+                      <input id="settingsFullName" class="form-control" value="Rohan Mehta" required />
                       <div class="invalid-feedback">Name is required.</div>
                     </div>
                     <div class="col-md-6">
                       <label class="form-label">Email</label>
-                      <input class="form-control" type="email" value="rohan@wabulkpro.com" required />
+                      <input id="settingsEmail" class="form-control" type="email" value="rohan@wabulkpro.com" required />
                       <div class="invalid-feedback">Valid email required.</div>
                     </div>
                     <div class="col-md-6">
                       <label class="form-label">WhatsApp Number</label>
-                      <input class="form-control" value="+91 98765 43210" required />
+                      <input id="settingsWhatsappNumber" class="form-control" value="+91 98765 43210" required />
                       <div class="invalid-feedback">WhatsApp number is required.</div>
                     </div>
                     <div class="col-md-6">

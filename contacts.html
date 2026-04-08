@@ -81,7 +81,7 @@
                           <th></th>
                         </tr>
                       </thead>
-                      <tbody>
+                      <tbody id="contactsTableBody">
                         <tr>
                           <td>Aryan Sharma</td>
                           <td>+91 98765 12345</td>
@@ -128,7 +128,7 @@
 
     <div class="modal fade" id="addContactModal" tabindex="-1">
       <div class="modal-dialog">
-        <form class="modal-content needs-validation" novalidate data-success-message="Contact added successfully.">
+        <form id="addContactForm" class="modal-content needs-validation" novalidate data-no-toast="true">
           <div class="modal-header">
             <h5 class="modal-title">Add New Contact</h5>
             <button class="btn-close" data-bs-dismiss="modal" type="button"></button>
@@ -136,20 +136,21 @@
           <div class="modal-body">
             <div class="mb-3">
               <label class="form-label">Full Name</label>
-              <input class="form-control" required />
+              <input id="contactName" class="form-control" required />
               <div class="invalid-feedback">Name is required.</div>
             </div>
             <div class="mb-3">
               <label class="form-label">WhatsApp Number</label>
-              <input class="form-control" required />
+              <input id="contactPhone" class="form-control" required />
               <div class="invalid-feedback">Number is required.</div>
             </div>
             <div>
               <label class="form-label">Group</label>
-              <select class="form-select" required>
+              <select id="contactCountryCode" class="form-select" required>
                 <option value="">Select group</option>
-                <option>Leads</option>
-                <option>Customers</option>
+                <option value="+91">India (+91)</option>
+                <option value="+1">US (+1)</option>
+                <option value="+44">UK (+44)</option>
               </select>
               <div class="invalid-feedback">Please choose a group.</div>
             </div>
