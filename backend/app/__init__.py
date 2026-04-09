@@ -6,10 +6,11 @@ from flask_cors import CORS
 from .config import get_config
 from .extensions import db, bcrypt, jwt
 from .scheduling import start_scheduler
-from .routes import auth, user, contacts, campaigns, templates, logs
-
+import os
+from flask import Flask, jsonify
 
 def create_app() -> Flask:
+    # We will serve frontend files safely via specific endpoints.
     app = Flask(__name__)
     app.config.from_object(get_config())
 
@@ -53,6 +54,28 @@ def create_app() -> Flask:
     @app.get("/health")
     def health():
         return jsonify({"status": "ok"}), 200
+
+    from flask import send_from_directory
+
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+    @app.get("/")
+    def index():
+        return send_from_directory(base_dir, "index.html")
+
+    @app.get("/<path:filename>")
+    def serve_html(filename):
+        # Only allow serving specific safe files from root
+        if filename.endswith(".html") and not "/" in filename:
+            path = os.path.join(base_dir, filename)
+            if os.path.exists(path):
+                return send_from_directory(base_dir, filename)
+        return jsonify({"message": "Not Found"}), 404
+
+    @app.get("/assets/<path:filepath>")
+    def serve_assets(filepath):
+        assets_dir = os.path.join(base_dir, "assets")
+        return send_from_directory(assets_dir, filepath)
 
     return app
 

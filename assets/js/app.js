@@ -16,7 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
   startBackendKeepAlive();
 });
 
-const API_BASE_URL = "https://whatsapp-bulkmsg-app-back.onrender.com";
+// Use empty string so API calls are relative to the current host
+const API_BASE_URL = "";
 
 /* ── Backend Keep-Alive Pinger ────────────────────────────────
    Pings the /health endpoint every 4 minutes so Render's free
