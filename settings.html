@@ -30,11 +30,14 @@
         <nav class="nav flex-column">
           <a class="nav-link" href="dashboard.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a>
           <a class="nav-link" href="contacts.html"><i class="fa-solid fa-address-book"></i>Contacts</a>
-          <a class="nav-link" href="campaigns.html"><i class="fa-solid fa-bullhorn"></i>Campaign Builder</a>
+          <a class="nav-link" href="campaigns.html"><i class="fa-solid fa-bullhorn"></i>Campaigns</a>
           <a class="nav-link" href="templates.html"><i class="fa-solid fa-layer-group"></i>Templates</a>
           <a class="nav-link" href="reports.html"><i class="fa-solid fa-chart-pie"></i>Reports</a>
           <a class="nav-link active" href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a>
         </nav>
+        <div class="mt-auto pt-4 px-2">
+          <a class="nav-link text-danger" href="#" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i>Logout</a>
+        </div>
       </aside>
       <div class="mobile-overlay" id="mobileOverlay"></div>
       <main class="content-wrap">
@@ -49,6 +52,7 @@
         </div>
         <section class="page-body">
           <div class="row g-3">
+            <!-- Profile & API Key Form -->
             <div class="col-lg-7">
               <form id="settingsForm" class="card card-soft needs-validation" novalidate data-no-toast="true">
                 <div class="card-body">
@@ -56,51 +60,69 @@
                   <div class="row g-3">
                     <div class="col-md-6">
                       <label class="form-label">Full Name</label>
-                      <input id="settingsFullName" class="form-control" value="Rohan Mehta" required />
+                      <input id="settingsFullName" class="form-control" placeholder="Your name" required />
                       <div class="invalid-feedback">Name is required.</div>
                     </div>
                     <div class="col-md-6">
                       <label class="form-label">Email</label>
-                      <input id="settingsEmail" class="form-control" type="email" value="rohan@wabulkpro.com" required />
-                      <div class="invalid-feedback">Valid email required.</div>
+                      <input id="settingsEmail" class="form-control" type="email" disabled />
+                      <small class="text-muted">Email cannot be changed.</small>
                     </div>
-                    <div class="col-md-6">
-                      <label class="form-label">WhatsApp Number</label>
-                      <input id="settingsWhatsappNumber" class="form-control" value="+91 98765 43210" required />
-                      <div class="invalid-feedback">WhatsApp number is required.</div>
+                  </div>
+
+                  <hr class="my-4" />
+
+                  <div class="section-title d-flex align-items-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-success"></i>
+                    WhatsApp API Key
+                    <span class="badge badge-soft-warning ms-auto" id="apiKeyStatus">Checking…</span>
+                  </div>
+                  <div class="alert alert-light border small mb-3">
+                    <i class="fa-solid fa-circle-info text-primary me-1"></i>
+                    Enter your <strong>WhatsApp Cloud API Access Token</strong> from the
+                    <a href="https://developers.facebook.com/" target="_blank" rel="noopener">Meta Developer Portal</a>.
+                    This token is stored securely and used server-side to send messages.
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">API Access Token</label>
+                    <div class="input-group">
+                      <input class="form-control" id="apiKey" type="password" placeholder="Paste your WhatsApp API access token here" />
+                      <button class="btn btn-outline-secondary" id="toggleApiKey" type="button"><i class="fa-solid fa-eye"></i></button>
                     </div>
-                    <div class="col-md-6">
-                      <label class="form-label">Timezone</label>
-                      <select class="form-select" required>
-                        <option>Asia/Kolkata (GMT+5:30)</option>
-                        <option>UTC</option>
-                        <option>America/New_York</option>
-                      </select>
-                    </div>
-                    <div class="col-12">
-                      <label class="form-label">API Key</label>
-                      <div class="input-group">
-                        <input class="form-control" id="apiKey" type="password" value="sk_live_4f3kj2k3jf98f0dj" required />
-                        <button class="btn btn-outline-secondary" id="toggleApiKey" type="button"><i class="fa-solid fa-eye"></i></button>
-                      </div>
-                    </div>
+                    <small class="text-muted">Leave blank to keep the existing key unchanged.</small>
                   </div>
                 </div>
                 <div class="card-footer bg-white border-0 pb-4 px-4">
-                  <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk me-2"></i>Save Changes</button>
+                  <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk me-2"></i>Save Settings</button>
                 </div>
               </form>
             </div>
+
+            <!-- Right Panel -->
             <div class="col-lg-5">
-              <div class="card card-soft">
+              <div class="card card-soft mb-3">
                 <div class="card-body">
                   <div class="section-title">Connection Health</div>
-                  <div class="d-flex justify-content-between mb-2"><span>Token Status</span><span class="badge badge-soft-success">Active</span></div>
-                  <div class="d-flex justify-content-between mb-2"><span>Last Sync</span><span class="text-muted">2 mins ago</span></div>
-                  <div class="d-flex justify-content-between mb-3"><span>Webhook</span><span class="badge badge-soft-success">Verified</span></div>
-                  <button class="btn btn-outline-primary w-100" data-toast="Webhook test ping sent." data-type="primary">
+                  <div class="d-flex justify-content-between mb-2"><span>Backend API</span><span class="badge badge-soft-success" id="settingsHealthBadge">Checking…</span></div>
+                  <div class="d-flex justify-content-between mb-3"><span>API Key</span><span class="badge badge-soft-warning" id="settingsKeyBadge">Checking…</span></div>
+                  <button class="btn btn-outline-primary w-100" id="testConnectionBtn" type="button">
                     <i class="fa-solid fa-satellite-dish me-2"></i>Test Connection
                   </button>
+                </div>
+              </div>
+              <div class="card card-soft">
+                <div class="card-body">
+                  <div class="section-title">Need Help?</div>
+                  <p class="small text-muted mb-2">
+                    To get your WhatsApp API key:
+                  </p>
+                  <ol class="small text-muted mb-0">
+                    <li>Go to <a href="https://developers.facebook.com/" target="_blank">Meta Developer Portal</a></li>
+                    <li>Create or select a WhatsApp Business app</li>
+                    <li>Navigate to <strong>WhatsApp → API Setup</strong></li>
+                    <li>Copy the <strong>Temporary Access Token</strong> or generate a permanent one</li>
+                    <li>Paste it in the field on the left and save</li>
+                  </ol>
                 </div>
               </div>
             </div>

@@ -10,12 +10,69 @@ document.addEventListener("DOMContentLoaded", () => {
   initTemplatesPage();
   initLogsPage();
   initSettingsPage();
+  initDashboardPage();
   initValidation();
   bindDemoActions();
+  startBackendKeepAlive();
 });
 
 const API_BASE_URL = "https://whatsapp-bulkmsg-app-back.onrender.com";
 
+/* ── Backend Keep-Alive Pinger ────────────────────────────────
+   Pings the /health endpoint every 4 minutes so Render's free
+   tier never puts the backend to sleep.  A small status pill
+   in the bottom-left corner shows the live connection state.
+   ─────────────────────────────────────────────────────────── */
+const PING_INTERVAL_MS = 4 * 60 * 1000; // 4 minutes
+let _pingTimer = null;
+
+function startBackendKeepAlive() {
+  // Create the status indicator pill
+  createStatusIndicator();
+  // First ping immediately
+  pingBackend();
+  // Then repeat every 4 minutes
+  _pingTimer = setInterval(pingBackend, PING_INTERVAL_MS);
+}
+
+async function pingBackend() {
+  const indicator = document.getElementById("backendStatusDot");
+  const label = document.getElementById("backendStatusLabel");
+  if (indicator) indicator.className = "status-indicator-dot pinging";
+  if (label) label.textContent = "Pinging…";
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/health`, {
+      method: "GET",
+      cache: "no-store",
+    });
+    if (res.ok) {
+      if (indicator) indicator.className = "status-indicator-dot online";
+      if (label) label.textContent = "Backend Online";
+    } else {
+      throw new Error("not ok");
+    }
+  } catch {
+    if (indicator) indicator.className = "status-indicator-dot offline";
+    if (label) label.textContent = "Backend Offline";
+  }
+}
+
+function createStatusIndicator() {
+  // Don't add on login page
+  const page = window.location.pathname.split("/").pop() || "index.html";
+  if (page === "index.html" || page === "") return;
+
+  const pill = document.createElement("div");
+  pill.id = "backendStatusPill";
+  pill.innerHTML = `
+    <span class="status-indicator-dot pinging" id="backendStatusDot"></span>
+    <span class="status-indicator-label" id="backendStatusLabel">Connecting…</span>
+  `;
+  document.body.appendChild(pill);
+}
+
+/* ── Auth Guard ─────────────────────────────────────────────── */
 function enforceAuthGuard() {
   const page = window.location.pathname.split("/").pop() || "index.html";
   const isPublicPage = page === "index.html" || page === "";
@@ -25,6 +82,7 @@ function enforceAuthGuard() {
   }
 }
 
+/* ── Sidebar ────────────────────────────────────────────────── */
 function initSidebar() {
   const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("mobileOverlay");
@@ -48,8 +106,19 @@ function initSidebar() {
       if (window.innerWidth < 992) closeSidebar();
     });
   });
+
+  // Logout button
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.removeItem("wa_token");
+      window.location.href = "index.html";
+    });
+  }
 }
 
+/* ── Tooltips ───────────────────────────────────────────────── */
 function initTooltips() {
   const tooltipTriggerList = [].slice.call(
     document.querySelectorAll('[data-bs-toggle="tooltip"]')
@@ -57,6 +126,7 @@ function initTooltips() {
   tooltipTriggerList.forEach((el) => new bootstrap.Tooltip(el));
 }
 
+/* ── CSV Preview ────────────────────────────────────────────── */
 function initCSVPreview() {
   const input = document.getElementById("csvFile");
   const list = document.getElementById("csvPreviewList");
@@ -83,6 +153,7 @@ function initCSVPreview() {
   });
 }
 
+/* ── Template Preview (Campaign Builder) ────────────────────── */
 function initTemplatePreview() {
   const templateSelect = document.getElementById("templateSelect");
   const variableInputs = document.querySelectorAll("[data-var-key]");
@@ -113,6 +184,7 @@ function initTemplatePreview() {
   render();
 }
 
+/* ── API Key Toggle Eye ─────────────────────────────────────── */
 function initApiKeyToggle() {
   const keyInput = document.getElementById("apiKey");
   const toggle = document.getElementById("toggleApiKey");
@@ -124,6 +196,7 @@ function initApiKeyToggle() {
   });
 }
 
+/* ── Form Validation ────────────────────────────────────────── */
 function initValidation() {
   const forms = document.querySelectorAll(".needs-validation");
   forms.forEach((form) => {
@@ -148,6 +221,7 @@ function initValidation() {
   });
 }
 
+/* ── Demo Toast Buttons ─────────────────────────────────────── */
 function bindDemoActions() {
   document.querySelectorAll("[data-toast]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -158,6 +232,7 @@ function bindDemoActions() {
   });
 }
 
+/* ── Auth (Login / Register) ────────────────────────────────── */
 function initAuth() {
   const loginForm = document.getElementById("loginForm");
   const registerForm = document.getElementById("registerForm");
@@ -222,6 +297,7 @@ function initAuth() {
   }
 }
 
+/* ── API Helpers ────────────────────────────────────────────── */
 async function apiPost(path, payload) {
   const token = localStorage.getItem("wa_token");
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -270,6 +346,7 @@ async function apiPut(path, payload) {
   return data;
 }
 
+/* ── Contacts Page ──────────────────────────────────────────── */
 function initContactsPage() {
   const tableBody = document.getElementById("contactsTableBody");
   const addContactForm = document.getElementById("addContactForm");
@@ -326,6 +403,7 @@ function initContactsPage() {
   }
 }
 
+/* ── Templates Page ─────────────────────────────────────────── */
 function initTemplatesPage() {
   const grid = document.getElementById("templateGrid");
   const form = document.getElementById("newTemplateForm");
@@ -385,6 +463,7 @@ function initTemplatesPage() {
   }
 }
 
+/* ── Logs / Reports Page ────────────────────────────────────── */
 function initLogsPage() {
   const tableBody = document.getElementById("logsTableBody");
   if (!tableBody) return;
@@ -426,6 +505,7 @@ function initLogsPage() {
   }
 }
 
+/* ── Settings Page (with WhatsApp API Key) ──────────────────── */
 function initSettingsPage() {
   const form = document.getElementById("settingsForm");
   if (!form) return;
@@ -433,32 +513,124 @@ function initSettingsPage() {
   const fullName = document.getElementById("settingsFullName");
   const email = document.getElementById("settingsEmail");
   const apiKey = document.getElementById("apiKey");
+  const statusBadge = document.getElementById("apiKeyStatus");
+  const testBtn = document.getElementById("testConnectionBtn");
 
+  // Load profile + API key status from backend
   apiGet("/user/profile")
     .then((p) => {
       if (fullName) fullName.value = p.full_name || "";
       if (email) email.value = p.email || "";
+      // Show whether API key is set
+      if (statusBadge) {
+        if (p.whatsapp_api_key_set) {
+          statusBadge.className = "badge badge-soft-success";
+          statusBadge.textContent = "Key Configured";
+        } else {
+          statusBadge.className = "badge badge-soft-warning";
+          statusBadge.textContent = "Not Set";
+        }
+      }
+      // Clear placeholder if key is set
+      if (apiKey && p.whatsapp_api_key_set) {
+        apiKey.placeholder = "••••••••••••••••  (key is saved — enter new to replace)";
+        apiKey.value = "";
+      }
     })
     .catch((err) => showToast(err.message || "Failed to load profile.", "danger"));
 
+  // Save settings
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!form.checkValidity()) {
       form.classList.add("was-validated");
       return;
     }
+
+    const payload = { full_name: fullName?.value.trim() };
+
+    // Only send API key if user typed something new
+    const keyVal = apiKey?.value.trim();
+    if (keyVal) {
+      payload.whatsapp_api_key = keyVal;
+    }
+
     try {
-      await apiPut("/user/profile", {
-        full_name: fullName?.value.trim(),
-        whatsapp_api_key: apiKey?.value.trim()
-      });
-      showToast("Profile updated successfully.", "success");
+      await apiPut("/user/profile", payload);
+      showToast("Settings saved successfully.", "success");
+
+      // Update status badge
+      if (statusBadge && keyVal) {
+        statusBadge.className = "badge badge-soft-success";
+        statusBadge.textContent = "Key Configured";
+        apiKey.placeholder = "••••••••••••••••  (key is saved — enter new to replace)";
+        apiKey.value = "";
+      }
     } catch (err) {
-      showToast(err.message || "Failed to save profile.", "danger");
+      showToast(err.message || "Failed to save settings.", "danger");
     }
   });
+
+  // Test connection button
+  if (testBtn) {
+    testBtn.addEventListener("click", async () => {
+      testBtn.disabled = true;
+      testBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Testing…';
+      try {
+        const res = await fetch(`${API_BASE_URL}/health`, { cache: "no-store" });
+        if (res.ok) {
+          showToast("Backend connection is healthy!", "success");
+        } else {
+          showToast("Backend responded with an error.", "warning");
+        }
+      } catch {
+        showToast("Cannot reach backend. It may be sleeping.", "danger");
+      }
+      testBtn.disabled = false;
+      testBtn.innerHTML = '<i class="fa-solid fa-satellite-dish me-2"></i>Test Connection';
+    });
+  }
 }
 
+/* ── Dashboard Page (live stats from backend) ───────────────── */
+function initDashboardPage() {
+  const contactsStat = document.getElementById("statTotalContacts");
+  const campaignsStat = document.getElementById("statActiveCampaigns");
+  const messagesStat = document.getElementById("statMessagesSent");
+  const apiKeyBadge = document.getElementById("statApiKeyStatus");
+  if (!contactsStat) return; // not on dashboard
+
+  const loadDashboardStats = async () => {
+    try {
+      // Load contacts count
+      const contacts = await apiGet("/contacts");
+      contactsStat.textContent = contacts.length.toLocaleString();
+
+      // Load campaigns count
+      const campaigns = await apiGet("/campaigns");
+      campaignsStat.textContent = campaigns.length.toLocaleString();
+
+      // Load logs count
+      const logs = await apiGet("/logs");
+      messagesStat.textContent = logs.length.toLocaleString();
+
+      // Load API key status
+      const profile = await apiGet("/user/profile");
+      if (apiKeyBadge) {
+        apiKeyBadge.textContent = profile.whatsapp_api_key_set ? "Configured" : "Not Set";
+        apiKeyBadge.className = profile.whatsapp_api_key_set
+          ? "text-success fw-semibold"
+          : "text-warning fw-semibold";
+      }
+    } catch (err) {
+      // Silently fail — dashboard will show 0s
+    }
+  };
+
+  loadDashboardStats();
+}
+
+/* ── Toast Notifications ────────────────────────────────────── */
 function showToast(message, type = "primary") {
   const host = document.getElementById("toastHost");
   if (!host) return;

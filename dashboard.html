@@ -29,18 +29,15 @@
         </div>
         <nav class="nav flex-column">
           <a class="nav-link active" href="dashboard.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a>
-          <a class="nav-link" href="devices.html"><i class="fa-solid fa-mobile-screen-button"></i>Devices</a>
-          <a class="nav-link" href="single_message.html"><i class="fa-regular fa-paper-plane"></i>Single Message</a>
-          <a class="nav-link" href="bulk_messages.html"><i class="fa-solid fa-messages"></i>Bulk Messages</a>
-          <a class="nav-link" href="templates.html"><i class="fa-solid fa-layer-group"></i>Templates</a>
           <a class="nav-link" href="contacts.html"><i class="fa-solid fa-address-book"></i>Contacts</a>
           <a class="nav-link" href="campaigns.html"><i class="fa-solid fa-bullhorn"></i>Campaigns</a>
-          <a class="nav-link" href="ai_chatbot.html"><i class="fa-solid fa-robot"></i>AI Chatbot</a>
-          <a class="nav-link" href="chatbot_flows.html"><i class="fa-solid fa-diagram-project"></i>Chatbot Flows</a>
-          <a class="nav-link" href="warmer.html"><i class="fa-solid fa-fire"></i>Warmer</a>
+          <a class="nav-link" href="templates.html"><i class="fa-solid fa-layer-group"></i>Templates</a>
           <a class="nav-link" href="reports.html"><i class="fa-solid fa-chart-pie"></i>Reports</a>
           <a class="nav-link" href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a>
         </nav>
+        <div class="mt-auto pt-4 px-2">
+          <a class="nav-link text-danger" href="#" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i>Logout</a>
+        </div>
       </aside>
       <div class="mobile-overlay" id="mobileOverlay"></div>
 
@@ -53,7 +50,7 @@
               <small class="text-muted">Overview of messaging performance</small>
             </div>
           </div>
-          <button class="btn btn-primary" data-toast="Sync started. Latest metrics coming in..." data-type="primary">
+          <button class="btn btn-primary" onclick="location.reload()">
             <i class="fa-solid fa-rotate me-2"></i>Refresh Data
           </button>
         </div>
@@ -65,8 +62,8 @@
                 <div class="card-body d-flex justify-content-between">
                   <div>
                     <div class="text-muted small">Total Contacts</div>
-                    <h4 class="fw-bold mb-0">18,420</h4>
-                    <small class="text-success">+9.2% this month</small>
+                    <h4 class="fw-bold mb-0" id="statTotalContacts">0</h4>
+                    <small class="text-muted">from your contact list</small>
                   </div>
                   <span class="stat-icon"><i class="fa-solid fa-users"></i></span>
                 </div>
@@ -76,9 +73,9 @@
               <div class="card card-soft h-100">
                 <div class="card-body d-flex justify-content-between">
                   <div>
-                    <div class="text-muted small">Active Campaigns</div>
-                    <h4 class="fw-bold mb-0">26</h4>
-                    <small class="text-success">+3 launched today</small>
+                    <div class="text-muted small">Campaigns</div>
+                    <h4 class="fw-bold mb-0" id="statActiveCampaigns">0</h4>
+                    <small class="text-muted">total campaigns created</small>
                   </div>
                   <span class="stat-icon"><i class="fa-solid fa-bullhorn"></i></span>
                 </div>
@@ -88,9 +85,9 @@
               <div class="card card-soft h-100">
                 <div class="card-body d-flex justify-content-between">
                   <div>
-                    <div class="text-muted small">Messages Sent</div>
-                    <h4 class="fw-bold mb-0">247,900</h4>
-                    <small class="text-success">95.8% delivery rate</small>
+                    <div class="text-muted small">Messages Logged</div>
+                    <h4 class="fw-bold mb-0" id="statMessagesSent">0</h4>
+                    <small class="text-muted">across all campaigns</small>
                   </div>
                   <span class="stat-icon"><i class="fa-solid fa-paper-plane"></i></span>
                 </div>
@@ -100,11 +97,11 @@
               <div class="card card-soft h-100">
                 <div class="card-body d-flex justify-content-between">
                   <div>
-                    <div class="text-muted small">Credits Remaining</div>
-                    <h4 class="fw-bold mb-0">42,810</h4>
-                    <small class="text-warning">Refill in 6 days</small>
+                    <div class="text-muted small">WhatsApp API Key</div>
+                    <h4 class="fw-bold mb-0" id="statApiKeyStatus">—</h4>
+                    <small class="text-muted"><a href="settings.html" class="text-primary">manage in settings</a></small>
                   </div>
-                  <span class="stat-icon"><i class="fa-solid fa-wallet"></i></span>
+                  <span class="stat-icon"><i class="fa-solid fa-key"></i></span>
                 </div>
               </div>
             </div>
@@ -114,93 +111,33 @@
             <div class="col-xl-8">
               <div class="card card-soft">
                 <div class="card-body">
-                  <div class="section-title">Campaign Summary</div>
-                  <div class="table-responsive">
-                    <table class="table align-middle mb-0">
-                      <thead>
-                        <tr>
-                          <th>Campaign</th>
-                          <th>Audience</th>
-                          <th>Status</th>
-                          <th>Sent</th>
-                          <th>CTR</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>Festive Offer Push</td>
-                          <td>12,800</td>
-                          <td><span class="badge badge-soft-success">Running</span></td>
-                          <td>10,110</td>
-                          <td>12.4%</td>
-                        </tr>
-                        <tr>
-                          <td>Lead Nurture Flow</td>
-                          <td>5,240</td>
-                          <td><span class="badge badge-soft-warning">Scheduled</span></td>
-                          <td>0</td>
-                          <td>-</td>
-                        </tr>
-                        <tr>
-                          <td>Re-engagement Q1</td>
-                          <td>8,970</td>
-                          <td><span class="badge badge-soft-danger">Paused</span></td>
-                          <td>6,314</td>
-                          <td>6.7%</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                  <div class="section-title">Quick Actions</div>
+                  <div class="row g-2">
+                    <div class="col-6 col-md-3">
+                      <a href="contacts.html" class="btn btn-outline-primary w-100"><i class="fa-solid fa-user-plus me-1"></i>Add Contact</a>
+                    </div>
+                    <div class="col-6 col-md-3">
+                      <a href="campaigns.html" class="btn btn-outline-primary w-100"><i class="fa-solid fa-bullhorn me-1"></i>New Campaign</a>
+                    </div>
+                    <div class="col-6 col-md-3">
+                      <a href="templates.html" class="btn btn-outline-primary w-100"><i class="fa-solid fa-layer-group me-1"></i>Templates</a>
+                    </div>
+                    <div class="col-6 col-md-3">
+                      <a href="reports.html" class="btn btn-outline-primary w-100"><i class="fa-solid fa-chart-pie me-1"></i>View Reports</a>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="col-xl-4">
-              <div class="card card-soft mb-3">
-                <div class="card-body">
-                  <div class="section-title">Recent Activity</div>
-                  <ul class="list-group list-group-flush">
-                    <li class="list-group-item px-0 d-flex justify-content-between">
-                      <span>Template <strong>Offer_v2</strong> approved</span>
-                      <small class="text-muted">5m</small>
-                    </li>
-                    <li class="list-group-item px-0 d-flex justify-content-between">
-                      <span>CSV imported 1,240 contacts</span>
-                      <small class="text-muted">22m</small>
-                    </li>
-                    <li class="list-group-item px-0 d-flex justify-content-between">
-                      <span>Campaign "Welcome Flow" sent</span>
-                      <small class="text-muted">1h</small>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div class="card card-soft mt-3">
+              <div class="card card-soft">
                 <div class="card-body">
                   <div class="section-title">System Health</div>
-                  <div class="d-flex justify-content-between mb-2"><span>WhatsApp API</span><span class="text-success">Operational</span></div>
-                  <div class="progress mb-3" role="progressbar"><div class="progress-bar bg-success" style="width: 99%"></div></div>
-                  <button class="btn btn-outline-primary w-100" data-toast="Logs exported successfully." data-type="success">
-                    <i class="fa-solid fa-file-export me-2"></i>Export Logs
-                  </button>
-                </div>
-              </div>
-              <div class="card card-soft mt-3">
-                <div class="card-body">
-                  <div class="section-title">Quick Actions</div>
-                  <div class="row g-2">
-                    <div class="col-6">
-                      <a href="bulk_messages.html" class="btn btn-outline-primary w-100"><i class="fa-solid fa-messages me-1"></i>Bulk Send</a>
-                    </div>
-                    <div class="col-6">
-                      <a href="contacts.html" class="btn btn-outline-primary w-100"><i class="fa-solid fa-user-plus me-1"></i>Add Contact</a>
-                    </div>
-                    <div class="col-6">
-                      <a href="devices.html" class="btn btn-outline-primary w-100"><i class="fa-solid fa-mobile-screen-button me-1"></i>Add Device</a>
-                    </div>
-                    <div class="col-6">
-                      <a href="templates.html" class="btn btn-outline-primary w-100"><i class="fa-solid fa-layer-group me-1"></i>New Template</a>
-                    </div>
-                  </div>
+                  <div class="d-flex justify-content-between mb-2"><span>Backend API</span><span class="text-success" id="dashHealthStatus">Checking…</span></div>
+                  <div class="progress mb-3" role="progressbar"><div class="progress-bar bg-success" style="width: 99%" id="dashHealthBar"></div></div>
+                  <a href="settings.html" class="btn btn-outline-primary w-100">
+                    <i class="fa-solid fa-gear me-2"></i>Go to Settings
+                  </a>
                 </div>
               </div>
             </div>

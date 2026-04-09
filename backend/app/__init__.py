@@ -13,12 +13,14 @@ def create_app() -> Flask:
     app = Flask(__name__)
     app.config.from_object(get_config())
 
-    # CORS for browser-based frontend (GitHub Pages, etc.)
-    # Configure allowed origin via env var FRONTEND_ORIGIN if needed.
+    # CORS for browser-based frontend (Render static site, GitHub Pages, etc.)
+    frontend_origin = app.config.get("FRONTEND_ORIGIN", "*")
     CORS(
         app,
-        resources={r"/*": {"origins": app.config.get("FRONTEND_ORIGIN", "*")}},
+        resources={r"/*": {"origins": frontend_origin}},
         supports_credentials=False,
+        allow_headers=["Content-Type", "Authorization"],
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     )
 
     db.init_app(app)
