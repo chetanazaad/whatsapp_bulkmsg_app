@@ -299,6 +299,17 @@ function initAuth() {
 }
 
 /* ── API Helpers ────────────────────────────────────────────── */
+function handleAuthError(status) {
+  if (status === 401 || status === 422) {
+    localStorage.removeItem("wa_token");
+    if (!window.location.pathname.endsWith("index.html") && window.location.pathname !== "/") {
+      window.location.href = "index.html";
+    }
+    return true;
+  }
+  return false;
+}
+
 async function apiPost(path, payload) {
   const token = localStorage.getItem("wa_token");
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -309,6 +320,9 @@ async function apiPost(path, payload) {
     },
     body: JSON.stringify(payload)
   });
+  
+  if (handleAuthError(response.status)) throw new Error("Session expired. Please log in again.");
+
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(data.message || `Request failed: ${response.status}`);
@@ -323,6 +337,9 @@ async function apiGet(path) {
       ...(token ? { Authorization: `Bearer ${token}` } : {})
     }
   });
+
+  if (handleAuthError(response.status)) throw new Error("Session expired. Please log in again.");
+
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(data.message || `Request failed: ${response.status}`);
@@ -340,6 +357,9 @@ async function apiPut(path, payload) {
     },
     body: JSON.stringify(payload)
   });
+
+  if (handleAuthError(response.status)) throw new Error("Session expired. Please log in again.");
+
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(data.message || `Request failed: ${response.status}`);
