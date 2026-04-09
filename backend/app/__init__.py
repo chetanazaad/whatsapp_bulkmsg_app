@@ -8,6 +8,7 @@ from .extensions import db, bcrypt, jwt
 from .scheduling import start_scheduler
 import os
 from flask import Flask, jsonify
+from .routes import auth, user, contacts, campaigns, templates, logs
 
 def create_app() -> Flask:
     # We will serve frontend files safely via specific endpoints.
